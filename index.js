@@ -3,7 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const User = require('./Models/User.js');
 
-const { body } = require('express-validator');
+const { body, validationResult } = require('express-validator');
 
 // const connectToMongo = require('./db')
 
@@ -37,28 +37,46 @@ app.get('/', async (req, res) => {
 
 app.post('/', [
     body('name', 'Enter a valid name').isLength({ min: 3 }),
-    body('phone', 'Description must be atleast 5 characters').isLength({ min: 10 })], async (req, res) => {
+    body('phone', "enter a valid phone number").isLength({ min: 10 })], async (req, res) => {
 
 
 
         try {
 
+            // If there are errors, return Bad request and the errors
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
+
+
             const { name, phone, age } = req.body
-
-            if (name | phone | age) {
-                const addedUser = await User.create({
-                    name, phone, age
-                })
+            const addedUser = await User.create({
+                name, phone, age
+            })
 
 
 
-                res.json({ addedUser })
+            res.json({ addedUser })
 
-            }
-            else {
 
-                res.send('please enter requrired field')
-            }
+
+            // const { name, phone, age } = req.body
+
+            // if (name | phone | age) {
+            //     const addedUser = await User.create({
+            //         name, phone, age
+            //     })
+
+
+
+            //     res.json({ addedUser })
+
+            // }
+            // else {
+
+            //     res.send('please enter requrired field')
+            // }
 
 
         } catch (error) {
@@ -71,9 +89,36 @@ app.post('/', [
     })
 
 
-app.put('/', async (req, res) => {
+app.put('/:id', async (req, res) => {
 
-    res.send('put request ')
+
+
+    try {
+
+        const errors = validationResult(req);
+
+
+        // Create a new User  object
+        const { name, phone, age } = req.body;
+        const updatingUser = {};
+        if (name) { updatingUser.name = name };
+        if (phone) { updatingUser.phone = phone };
+        if (age) { updatingUser.age = age };
+
+        // Find the user to be updated and update it
+
+        const { id } = req.params
+
+        const updatedUser = await User.findByIdAndUpdate(id, { $set: updatingUser }, { new: true })
+        res.send(`put request ${updatedUser} `)
+
+
+    } catch (error) {
+        res.send(error.message)
+    }
+
+
+
 })
 
 app.delete('/', async (req, res) => {
