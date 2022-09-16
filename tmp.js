@@ -1,8 +1,11 @@
+const getUsers = async () => {
+    // API Call 
 
-require('dotenv').config()
-console.log(process.env.PORT)
-
-const { PORT, USERNAME, PASSWORD, DATABASENAME } = process.env
+    const response = await fetch(`https://vijay982816-blanknode-mtewnqs608r.ws-us65.gitpod.io/`);
 
 
-console.log(`'mongodb+srv://${USERNAME}:${PASSWORD}@cluster0.bulhrac.mongodb.net/${DATABASENAME}?retryWrites=true&w=majority'`)
+    console.log(await response.json())
+
+}
+
+getUsers()

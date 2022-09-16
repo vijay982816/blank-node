@@ -1,6 +1,7 @@
 const express = require('express');
 const User = require('./Models/User.js');
 const connectToMongo = require('./db.js');
+var cors = require('cors')
 const { body, validationResult } = require('express-validator');
 require('dotenv').config()
 
@@ -8,6 +9,7 @@ require('dotenv').config()
 const app = express();
 const port = process.env.PORT || 3002;
 app.use(express.json())
+app.use(cors())
 
 
 
@@ -15,14 +17,14 @@ app.use(express.json())
 
 connectToMongo()
 
-
 //getting all the users
 app.get('/', async (req, res) => {
 
 
 
     const allUser = await User.find({})
-    res.json({ allUser })
+    // res.json({ allUser })
+    res.json(allUser)
 })
 
 
@@ -49,7 +51,9 @@ app.post('/', [
 
 
 
-            res.json({ addedUser })
+            // res.json({ addedUser })
+
+            res.json( addedUser )
 
 
 
