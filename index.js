@@ -38,13 +38,24 @@ app.post('/', async (req, res) => {
     const { name, phone, age } = req.body
 
     const allUser = await User.create({
-        name, phone,age
+        name, phone, age
     })
 
     console.log(allUser)
     res.send('get request [gettin all the user from db ]')
 })
 
+app.delete('/', async (req, res) => {
+
+    const { id } = req.body
+})
+
+
+
+app.delete('/deleteAll', async (req, res) => {
+    const deleted = await User.deleteMany({})
+    res.json({ deleted })
+})
 
 
 app.listen(port, () => {
