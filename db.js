@@ -1,16 +1,16 @@
 const mongoose = require('mongoose');
-const URI = 'mongodb+srv://admin:<admin>@cluster0.bulhrac.mongodb.net/MongoDbDatabase?retryWrites=true&w=majority'
+//getting all the secret details from .env file
+const { USERNAME, PASSWORD, DATABASENAME } = process.env
+
+const URI = `'mongodb+srv://${USERNAME}:${PASSWORD}@cluster0.bulhrac.mongodb.net/${DATABASENAME}?retryWrites=true&w=majority'`
 
 const connectToMongo = () => {
-    mongoose.connect(URI, {
-        useNewUrlParser: true,
-        useFindAndModify: false,
-        useUnifiedTopology: true
-    })
-    .then(success => console.log('connect to db succesflly'))
+    mongoose.connect(URI).then(success => console.log(' connected with db successfully'))
 }
 
 module.exports = connectToMongo;
+
+
 
 
 

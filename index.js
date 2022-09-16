@@ -1,40 +1,32 @@
 const express = require('express');
-
-const mongoose = require('mongoose');
 const User = require('./Models/User.js');
-
+const connectToMongo = require('./db.js');
 const { body, validationResult } = require('express-validator');
+require('dotenv').config()
 
-// const connectToMongo = require('./db')
-
-// const bodyParser = require('body-parser');
-// const cors = require('cors');
-// const User = require('./Models/Users.js');
 
 const app = express();
-const port = 3001;
-
-
-
-// app.use(cors())
+const port = process.env.PORT || 3002;
 app.use(express.json())
 
-const URI = 'mongodb+srv://Hitesh:Hitesh@cluster0.bulhrac.mongodb.net/MongoDbDatabase?retryWrites=true&w=majority'
 
-mongoose.connect(URI).then(success => console.log(' connected with db successfully'))
 
+// connecting to db [mongodb]
+
+connectToMongo()
+
+
+//getting all the users
 app.get('/', async (req, res) => {
 
 
 
     const allUser = await User.find({})
-
-
-    // res.send("getting all the request")
-    // res.json({ status: 'ok',allUser })
     res.json({ allUser })
 })
 
+
+//ading users in db
 app.post('/', [
     body('name', 'Enter a valid name').isLength({ min: 3 }),
     body('phone', "enter a valid phone number").isLength({ min: 10 })], async (req, res) => {
@@ -81,21 +73,20 @@ app.post('/', [
 
         } catch (error) {
 
-
-            res.send(error.message)
+            console.error(error.message);
+            res.status(500).send("Internal Server Error");
         }
 
 
     })
 
-
+// updating user 
 app.put('/:id', async (req, res) => {
 
 
 
     try {
 
-        const errors = validationResult(req);
 
 
         // Create a new User  object
@@ -114,25 +105,31 @@ app.put('/:id', async (req, res) => {
 
 
     } catch (error) {
-        res.send(error.message)
+        console.error(error.message);
+        res.status(500).send("Internal Server Error");
     }
 
 
 
 })
 
-app.delete('/', async (req, res) => {
 
-    const { id } = req.body
+//deleting user
+app.delete('/:id', async (req, res) => {
 
-    res.send('deleted data from the db')
-})
+    try {
+        // Find the user to be delete and delete it
+        let foundUser = await User.findById(req.params.id);
+        if (!foundUser) { return res.status(404).send("User Not Found") }
 
 
 
-app.delete('/deleteAll', async (req, res) => {
-    const deleted = await User.deleteMany({})
-    res.json({ deleted })
+        const deletedUser = await User.findByIdAndDelete(req.params.id)
+        res.json({ "Success": "User has been deleted", deletedUser: deletedUser });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal Server Error");
+    }
 })
 
 
