@@ -3,6 +3,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const User = require('./Models/User.js');
 
+const { body } = require('express-validator');
+
 // const connectToMongo = require('./db')
 
 // const bodyParser = require('body-parser');
@@ -27,27 +29,58 @@ app.get('/', async (req, res) => {
 
     const allUser = await User.find({})
 
-    console.log(typeof (allUser))
+
     // res.send("getting all the request")
     // res.json({ status: 'ok',allUser })
     res.json({ allUser })
 })
 
-app.post('/', async (req, res) => {
+app.post('/', [
+    body('name', 'Enter a valid name').isLength({ min: 3 }),
+    body('phone', 'Description must be atleast 5 characters').isLength({ min: 10 })], async (req, res) => {
 
-    const { name, phone, age } = req.body
 
-    const allUser = await User.create({
-        name, phone, age
+
+        try {
+
+            const { name, phone, age } = req.body
+
+            if (name | phone | age) {
+                const addedUser = await User.create({
+                    name, phone, age
+                })
+
+
+
+                res.json({ addedUser })
+
+            }
+            else {
+
+                res.send('please enter requrired field')
+            }
+
+
+        } catch (error) {
+
+
+            res.send(error.message)
+        }
+
+
     })
 
-    console.log(allUser)
-    res.send('get request [gettin all the user from db ]')
+
+app.put('/', async (req, res) => {
+
+    res.send('put request ')
 })
 
 app.delete('/', async (req, res) => {
 
     const { id } = req.body
+
+    res.send('deleted data from the db')
 })
 
 
