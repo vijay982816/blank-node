@@ -27,6 +27,24 @@ app.get('/', async (req, res) => {
     res.json(allUser)
 })
 
+//getting one user
+app.get('/oneuser/:id', async (req, res) => {
+
+
+
+    // Find the user 
+
+    const { id } = req.params
+
+    const oneUser = await User.findById(id)
+
+    res.json(oneUser)
+    
+
+
+
+
+})
 
 //ading users in db
 app.post('/', [
